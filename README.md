@@ -1,4 +1,4 @@
-# DFRobot_CS01
+# DFRobot_GS01
 GS01 is a sensor capable of tracking human head and shoulders and detecting five types of gestures from up to 3 meters away.
    
    
