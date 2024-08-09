@@ -32,6 +32,7 @@ class DFRobot_RTU(object):
   eCMD_READ_COILS           = 0x01
   eCMD_READ_DISCRETE        = 0x02
   eCMD_READ_HOLDING         = 0x03
+  eCMD_READ_INPUT           = 0x04
   eCMD_WRITE_COILS          = 0x05
   eCMD_WRITE_HOLDING        = 0x06
   eCMD_WRITE_MULTI_COILS    = 0x0F
@@ -46,6 +47,14 @@ class DFRobot_RTU(object):
       @param stopbit:  The UART stopbit bits of raspberry pi.
     '''
     self._ser = serial.Serial("/dev/ttyAMA0",baud, bits, parity, stopbit)
+    self._timeout = 0.1 #0.1s
+  
+  def set_timout_time_s(self, timeout = 0.1):
+    '''
+      @brief Set receive timeout time, unit s.
+      @param timeout:  receive timeout time, unit s, default 0.1s.
+    '''
+    self._timeout = timeout
 
   def read_coils_register(self, id, reg):
     '''
@@ -59,13 +68,13 @@ class DFRobot_RTU(object):
     '''
     l = [(reg >> 8)&0xFF, (reg & 0xFF), 0x00, 0x01]
     val = False
-    if(id > 0xF7):
-      print("device addr error.")
+    if (id < 1) or (id > 0xF7):
+      print("device addr error.(1~247) %d"%id)
       return 0
     l = self._packed(id, self.eCMD_READ_COILS, l)
     self._send_package(l)
     l = self.recv_and_parse_package(id, self.eCMD_READ_COILS,1)
-    if (l[0] == 0) and len(l) == 8:
+    if (l[0] == 0) and len(l) == 7:
       if (l[4] & 0x01) != 0:
           val = True
     return val
@@ -82,8 +91,8 @@ class DFRobot_RTU(object):
     '''
     l = [(reg >> 8)&0xFF, (reg & 0xFF), 0x00, 0x01]
     val = False
-    if(id > 0xF7):
-      print("device addr error.")
+    if (id < 1) or (id > 0xF7):
+      print("device addr error.(1~247) %d"%id)
       return 0
     l = self._packed(id, self.eCMD_READ_DISCRETE, l)
     self._send_package(l)
@@ -102,12 +111,33 @@ class DFRobot_RTU(object):
       @return Return the value of the holding register value.
     '''
     l = [(reg >> 8)&0xFF, (reg & 0xFF), 0x00, 0x01]
-    if(id > 0xF7):
-      print("device addr error.")
+    if (id < 1) or (id > 0xF7):
+      print("device addr error.(1~247) %d"%id)
       return 0
     l = self._packed(id, self.eCMD_READ_HOLDING, l)
     self._send_package(l)
     l = self.recv_and_parse_package(id, self.eCMD_READ_HOLDING,2)
+    if (l[0] == 0) and len(l) == 8:
+      l[0] = ((l[4] << 8) | l[5]) & 0xFFFF
+    else:
+      l[0] = 0
+    return l[0]
+
+  def read_input_register(self, id, reg):
+    '''
+      @brief Read a input Register.
+      @param id:  modbus device ID. Range: 0x00 ~ 0xF7(0~247), 0x00 is broadcasr address, which all slaves will process broadcast packets, 
+      @n          but will not answer.
+      @param reg: Input register address.
+      @return Return the value of the holding register value.
+    '''
+    l = [(reg >> 8)&0xFF, (reg & 0xFF), 0x00, 0x01]
+    if (id < 1) or (id > 0xF7):
+      print("device addr error.(1~247) %d"%id)
+      return 0
+    l = self._packed(id, self.eCMD_READ_INPUT, l)
+    self._send_package(l)
+    l = self.recv_and_parse_package(id, self.eCMD_READ_INPUT,2)
     if (l[0] == 0) and len(l) == 8:
       l[0] = ((l[4] << 8) | l[5]) & 0xFFFF
     else:
@@ -121,7 +151,16 @@ class DFRobot_RTU(object):
       @n          but will not answer.
       @param reg: Coils register address.
       @param flag: The value of the register value which will be write, 0 ro 1.
-      @return Return the value of the coils register write, 0 ro 1.
+      @return Exception code:
+      @n      0 : sucess.
+      @n      1 or eRTU_EXCEPTION_ILLEGAL_FUNCTION : Illegal function.
+      @n      2 or eRTU_EXCEPTION_ILLEGAL_DATA_ADDRESS: Illegal data address.
+      @n      3 or eRTU_EXCEPTION_ILLEGAL_DATA_VALUE:  Illegal data value.
+      @n      4 or eRTU_EXCEPTION_SLAVE_FAILURE:  Slave failure.
+      @n      8 or eRTU_EXCEPTION_CRC_ERROR:  CRC check error.
+      @n      9 or eRTU_RECV_ERROR:  Receive packet error.
+      @n      10 or eRTU_MEMORY_ERROR: Memory error.
+      @n      11 or eRTU_ID_ERROR: Broadcasr address or error ID
     '''
     val = 0x0000
     re = True
@@ -135,13 +174,7 @@ class DFRobot_RTU(object):
     l = self._packed(id, self.eCMD_WRITE_COILS, l)
     self._send_package(l)
     l = self.recv_and_parse_package(id, self.eCMD_WRITE_COILS,reg)
-    if (l[0] == 0) and len(l) == 9:
-      if val == (((l[5] << 8) | l[6]) & 0xFFFF):
-        re = flag
-    if re:
-      return True
-    else:
-      return False
+    return l[0]
       
 
   def write_holding_register(self, id, reg, val):
@@ -151,7 +184,16 @@ class DFRobot_RTU(object):
       @n          but will not answer.
       @param reg: Holding register address.
       @param val: The value of the register value which will be write.
-      @return Return the value of the holding register.
+      @return Exception code:
+      @n      0 : sucess.
+      @n      1 or eRTU_EXCEPTION_ILLEGAL_FUNCTION : Illegal function.
+      @n      2 or eRTU_EXCEPTION_ILLEGAL_DATA_ADDRESS: Illegal data address.
+      @n      3 or eRTU_EXCEPTION_ILLEGAL_DATA_VALUE:  Illegal data value.
+      @n      4 or eRTU_EXCEPTION_SLAVE_FAILURE:  Slave failure.
+      @n      8 or eRTU_EXCEPTION_CRC_ERROR:  CRC check error.
+      @n      9 or eRTU_RECV_ERROR:  Receive packet error.
+      @n      10 or eRTU_MEMORY_ERROR: Memory error.
+      @n      11 or eRTU_ID_ERROR: Broadcasr address or error ID
     '''
     l = [(reg >> 8)&0xFF, (reg & 0xFF), (val >> 8)&0xFF, (val & 0xFF)]
     val = 0
@@ -161,9 +203,7 @@ class DFRobot_RTU(object):
     l = self._packed(id, self.eCMD_WRITE_HOLDING, l)
     self._send_package(l)
     l = self.recv_and_parse_package(id, self.eCMD_WRITE_HOLDING,reg)
-    if (l[0] == 0) and len(l) == 9:
-      val = ((l[5] << 8) | l[6]) & 0xFFFF
-    return val
+    return l[0]
       
   def read_coils_registers(self, id, reg, reg_num):
     '''
@@ -190,8 +230,8 @@ class DFRobot_RTU(object):
     if mod:
       length += 1
     l = [(reg >> 8)&0xFF, (reg & 0xFF), (reg_num >> 8) & 0xFF, reg_num & 0xFF]
-    if(id > 0xF7):
-      print("device addr error.")
+    if (id < 1) or (id > 0xF7):
+      print("device addr error.(1~247) %d"%id)
       return [self.eRTU_ID_ERROR]
     l = self._packed(id, self.eCMD_READ_COILS, l)
     self._send_package(l)
@@ -226,8 +266,8 @@ class DFRobot_RTU(object):
     if mod:
       length += 1
     l = [(reg >> 8)&0xFF, (reg & 0xFF), (reg_num >> 8) & 0xFF, reg_num & 0xFF]
-    if(id > 0xF7):
-      print("device addr error.")
+    if (id < 1) or (id > 0xF7):
+      print("device addr error.(1~247) %d"%id)
       return [self.eRTU_ID_ERROR]
     l = self._packed(id, self.eCMD_READ_DISCRETE, l)
     self._send_package(l)
@@ -243,7 +283,7 @@ class DFRobot_RTU(object):
       @param id:  modbus device ID. Range: 0x00 ~ 0xF7(0~247), 0x00 is broadcasr address, which all slaves will process broadcast packets, 
       @n          but will not answer.
       @param reg: Read the start address of the holding register.
-      @param len: Number of read holding register.
+      @param size: Number of read holding register.
       @return list: format as follow:
       @n      list[0]: Exception code:
       @n               0 : sucess.
@@ -258,12 +298,46 @@ class DFRobot_RTU(object):
       @n      list[1:]: The value list of the holding register.
     '''
     l = [(reg >> 8)&0xFF, (reg & 0xFF), (size >> 8) & 0xFF, size & 0xFF]
-    if(id > 0xF7):
-      print("device addr error.")
+    if (id < 1) or (id > 0xF7):
+      print("device addr error.(1~247) %d"%id)
       return [self.eRTU_ID_ERROR]
     l = self._packed(id, self.eCMD_READ_HOLDING, l)
     self._send_package(l)
     l = self.recv_and_parse_package(id, self.eCMD_READ_HOLDING,size*2)
+    #lin = ['%02X' % i for i in l]
+    #print(" ".join(lin))
+    if (l[0] == 0) and (len(l) == (5+size*2+1)):
+      la = [l[0]] + l[4: len(l)-2]
+      return la
+    return [l[0]]
+
+  def read_input_registers(self, id, reg, size):
+    '''
+      @brief Read multiple input register.
+      @param id:  modbus device ID. Range: 0x00 ~ 0xF7(0~247), 0x00 is broadcasr address, which all slaves will process broadcast packets, 
+      @n          but will not answer.
+      @param reg: Read the start address of the input register.
+      @param size: Number of read input register.
+      @return list: format as follow:
+      @n      list[0]: Exception code:
+      @n               0 : sucess.
+      @n               1 or eRTU_EXCEPTION_ILLEGAL_FUNCTION : Illegal function.
+      @n               2 or eRTU_EXCEPTION_ILLEGAL_DATA_ADDRESS: Illegal data address.
+      @n               3 or eRTU_EXCEPTION_ILLEGAL_DATA_VALUE:  Illegal data value.
+      @n               4 or eRTU_EXCEPTION_SLAVE_FAILURE:  Slave failure.
+      @n               8 or eRTU_EXCEPTION_CRC_ERROR:  CRC check error.
+      @n               9 or eRTU_RECV_ERROR:  Receive packet error.
+      @n               10 or eRTU_MEMORY_ERROR: Memory error.
+      @n               11 or eRTU_ID_ERROR: Broadcasr address or error ID
+      @n      list[1:]: The value list of the input register.
+    '''
+    l = [(reg >> 8)&0xFF, (reg & 0xFF), (size >> 8) & 0xFF, size & 0xFF]
+    if (id < 1) or (id > 0xF7):
+      print("device addr error.(1~247) %d"%id)
+      return [self.eRTU_ID_ERROR]
+    l = self._packed(id, self.eCMD_READ_INPUT, l)
+    self._send_package(l)
+    l = self.recv_and_parse_package(id, self.eCMD_READ_INPUT,size*2)
     #lin = ['%02X' % i for i in l]
     #print(" ".join(lin))
     if (l[0] == 0) and (len(l) == (5+size*2+1)):
@@ -386,16 +460,19 @@ class DFRobot_RTU(object):
     self._clear_recv_buffer()
     if len(l):
       self._ser.write(l)
+      time.sleep(self._timeout)
 
   def recv_and_parse_package(self, id, cmd, val):
     package = [self.eRTU_ID_ERROR]
+    if id == 0:
+      return [0]
     if (id < 1) or (id > 0xF7):
       return package
     head = [0]*4
     index = 0
     t = time.time()
     remain = 0
-    while remain < 4:
+    while remain < 5:
       if self._ser.inWaiting():
         data = self._ser.read(1)
         try: 
@@ -410,14 +487,14 @@ class DFRobot_RTU(object):
           index = 0
         remain = index
         t = time.time()
-      if time.time() - t > 0.1:
+      if time.time() - t > self._timeout:
         #print("time out.")
         return [self.eRTU_RECV_ERROR]
       if(index == 4):
         if head[1] & 0x80:
           index = 5
         else:
-          if head[1] < 4:
+          if head[1] < 5:
             if head[2] != (val & 0xFF):
               index = 0
               remain = 0
@@ -427,8 +504,10 @@ class DFRobot_RTU(object):
             if (((head[2] << 8) | head[3]) & 0xFFFF) != val:
               index = 0
               remain = 0
+              #print("index = 0")
             else:
               index = 8
+              #print("index = 8")
         if index > 0:
           package = [0]*(index + 1)
           package[1:5] = head
@@ -445,7 +524,7 @@ class DFRobot_RTU(object):
               index += 1
               remain -= 1
               t = time.time()
-            if(time.time() - t > 0.1):
+            if(time.time() - t >self._timeout):
               print("time out1.")
               return [self.eRTU_RECV_ERROR]
           crc = ((package[len(package) - 2] << 8) | package[len(package) - 1]) & 0xFFFF
@@ -458,7 +537,6 @@ class DFRobot_RTU(object):
             package[0] = 0
           #lin = ['%02X' % i for i in package]
           #print(" ".join(lin))
-          #print[package]
           return package
 
 

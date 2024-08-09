@@ -104,12 +104,6 @@ public:
     uint16_t getGs01Vid();
 
     /**
-     * @brief Get the number of faces detected by the device.
-     * @return Number of faces detected.
-     */
-    uint16_t getFaceNumber();
-
-    /**
      * @brief Set the device address.
      * @param addr Device address.
      * @return True if the address is set successfully, otherwise false.
@@ -125,6 +119,38 @@ public:
      */
     uint16_t configUart(eBaudConfig_t baud, eParityConfig_t parity, eStopbits_t stopBit);
 
+    
+	bool setFaceDetectThres(uint16_t score);
+
+	bool setDetectThres(uint16_t x);  
+	
+	bool setGestureDetectThres(uint16_t score);
+
+	
+	/**
+     * @brief Get the number of faces detected by the device.
+     * @return Number of faces detected.
+     */
+    uint16_t getFaceNumber();
+	
+	
+	uint16_t getFaceLocationX();
+    
+	
+	uint16_t getFaceLocationY();
+	
+	
+	uint16_t getFaceScore();	
+	
+	
+	uint16_t getGestureType();
+
+    	
+	uint16_t getGestureScore();	
+	
+	
+	
+	
     /**
      * @brief Read input register.
      * @param reg Register address.

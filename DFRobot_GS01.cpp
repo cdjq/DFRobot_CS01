@@ -28,12 +28,56 @@ uint16_t DFRobot_GS01::configUart(eBaudConfig_t baud,eParityConfig_t parity,eSto
 }
 
 
-bool DFRobot_GS01::setDeviceAddr(uint16_t addr){
+uint16_t DFRobot_GS01::getFaceLocationX(){
+    return reaInputdReg(REG_GS01_FACE_LOCATION_X);
+}
+
+uint16_t DFRobot_GS01::getFaceLocationY(){
+    return reaInputdReg(REG_GS01_FACE_LOCATION_Y);
+}
+uint16_t DFRobot_GS01::getFaceScore(){
+    return reaInputdReg(REG_GS01_FACE_SCORE);
+}	
+uint16_t DFRobot_GS01::getGestureType(){
+    return reaInputdReg(REG_GS01_GESTURE_YTPE);
+}
+uint16_t DFRobot_GS01::getGestureScore(){
 	
-     	
+    return reaInputdReg(REG_GS01_GESTURE_SCORE);
+}	
+
+
+
+bool DFRobot_GS01::setFaceDetectThres(uint16_t score){
+	
+	
+	return writeIHoldingReg(REG_GS01_FACE_THRESHOLD,score);
+	
+}
+
+bool DFRobot_GS01::setDetectThres(uint16_t x){
+    return writeIHoldingReg(REG_GS01_FACE_SCORE_THRESHOLD,x);
+}  
+
+bool DFRobot_GS01::setGestureDetectThres(uint16_t score){
+	
+	return writeIHoldingReg(REG_GS01_GESTURE_SCORE_THRESHOLD,score);
+	
+}
+
+
+bool DFRobot_GS01::setDeviceAddr(uint16_t addr){
+	    	
 	return writeIHoldingReg(REG_GS01_ADDR,addr);
 	
 }
+
+
+
+
+
+
+
 
 DFRobot_GS01_UART::DFRobot_GS01_UART(Stream *s_,uint8_t addr)
 :DFRobot_RTU(s_){
@@ -113,7 +157,7 @@ uint16_t DFRobot_GS01_I2C::readReg(uint16_t reg)
   value = _pWire->read();
   value = value<<8 | _pWire->read();
   
-  delay(500);
+  delay(100);
   return value;
 }
 bool DFRobot_GS01_I2C::writeIHoldingReg(uint16_t reg,uint16_t data)
