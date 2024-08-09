@@ -1,40 +1,70 @@
+/*!
+ *@file detectGesture.ino
+ *@brief Detect gestures
+ *@details  This code detects the location, score of faces, and gestures along with their scores.
+ *@copyright   Copyright (c) 2010 DFRobot Co.Ltd (http://www.dfrobot.com)
+ *@license     The MIT license (MIT)
+ *@author [fengli](li.feng@dfrobot.com)
+ *@version  V1.0
+ *@date  2024-08-09
+ *@https://github.com/DFRobot/DFRobot_GS01
+*/
+
 #include "DFRobot_GS01.h"
 
-
+// Define the device ID for the GS01 sensor
 #define DEVICE_ID  0x72 
 
-DFRobot_GS01_UART cs01(&Serial1,DEVICE_ID);
+// Create an instance of DFRobot_GS01_UART with the specified device ID and Serial1 for UART communication
+DFRobot_GS01_UART cs01(&Serial1, DEVICE_ID);
+
+// Buffer for formatted output
 char str[100];
+
+
 void setup(){
-  
-	Serial1.begin(115200);
+    // Initialize Serial1 for UART communication with the GS01 sensor
+    Serial1.begin(115200);
+
+    // Initialize serial communication for debugging purposes
     Serial.begin(115200);
-	//人脸得分为0 ~100,设置得分阈值
+
+    // Set the face detection threshold. Face scores range from 0 to 100.
+    // Faces with scores above this threshold will be detected.
     cs01.setFaceDetectThres(60);
-	//手势得分为0 ~100,设置得分阈值
-    cs01.setGestureDetectThres(60);	
-	//设置检测范围，0~100，0的检测范围最小,100的检测范围最大
-	cs01.setGestureDetectThres(100);
+
+    // Set the gesture detection threshold. Gesture scores range from 0 to 100.
+    // Gestures with scores above this threshold will be detected.
+    cs01.setGestureDetectThres(60);    
+
+    // Set the gesture detection range.
+    // The range is from 0 to 100; 0 has the smallest detection range, and 100 has the largest.
+    cs01.setGestureDetectThres(100);
 }
 
 
-
 void loop(){
-   if(cs01.getFaceNumber()>0){
+    // Check if any faces are detected
+    if(cs01.getFaceNumber() > 0){
 
-	   uint16_t faceScore = cs01.getFaceScore();
-	   uint16_t faceX =  cs01.getFaceLocationX();
-	   uint16_t faceY =  cs01.getFaceLocationY();
-	   sprintf(str,"detect face at (x = %d,y = %d,scroe=%d)\n",faceX,faceY,faceScore);
-	   Serial.print(str);
-	   
-	   uint16_t gestureType = cs01.getGestureType();
-	   uint16_t gestureScore = cs01.getGestureScore();	
-	   sprintf(str,"detect gesture %d,scroe=%d\n",gestureType,gestureScore);
-	   Serial.print(str);
-	   
-   }
-   
-   
-   delay(500);
+        // Retrieve face score and location
+        uint16_t faceScore = cs01.getFaceScore();
+        uint16_t faceX = cs01.getFaceLocationX();
+        uint16_t faceY = cs01.getFaceLocationY();
+        
+        // Print the face detection results
+        sprintf(str, "detect face at (x = %d, y = %d, score = %d)\n", faceX, faceY, faceScore);
+        Serial.print(str);
+        
+        // Retrieve gesture type and score
+        uint16_t gestureType = cs01.getGestureType();
+        uint16_t gestureScore = cs01.getGestureScore();
+        
+        // Print the gesture detection results
+        sprintf(str, "detect gesture %d, score = %d\n", gestureType, gestureScore);
+        Serial.print(str);
+    }
+    
+    // Delay before the next loop iteration
+    delay(500);
 }

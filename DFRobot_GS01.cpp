@@ -1,3 +1,15 @@
+/*!
+ *@file DFRobot_GS01.cpp
+ *@brief Define the basic structure of class DFRobot_GS01, the implementation of basic methods.
+ *@details this module is used to identify the information in the QR code
+ *@copyright   Copyright (c) 2010 DFRobot Co.Ltd (http://www.dfrobot.com)
+ *@License     The MIT License (MIT)
+ *@author [fengli](li.feng@dfrobot.com)
+ *@version  V1.0
+ *@date  2024-8-9
+ *@https://github.com/DFRobot/DFRobot_GS01
+*/
+
 #include "DFRobot_GS01.h"
 DFRobot_GS01::DFRobot_GS01()
 {

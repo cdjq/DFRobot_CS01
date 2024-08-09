@@ -21,9 +21,14 @@ getGs01Vid	KEYWORD2
 getFaceNumber	KEYWORD2
 setDeviceAddr	KEYWORD2
 configUart	KEYWORD2
-
-
-
+getFaceLocationX	KEYWORD2
+getFaceLocationY	KEYWORD2
+getFaceScore	KEYWORD2
+getGestureType	KEYWORD2
+getGestureScore	KEYWORD2
+setFaceDetectThres	KEYWORD2
+setDetectThres	KEYWORD2
+setGestureDetectThres	KEYWORD2
 #######################################
 # Instances (KEYWORD2)
 #######################################

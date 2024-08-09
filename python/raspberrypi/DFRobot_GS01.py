@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 '''
   @file DFRobot_GS01.py
-  @brief 定义 DFRobot_GS01 类的基本结构和基本方法的实现。
+  @brief Define the basic structure and methods of the DFRobot_GS01 class.
   @copyright   Copyright (c) 2010 DFRobot Co.Ltd (http://www.dfrobot.com)
   @license     The MIT license (MIT)
   @author [fengli](li.feng@dfrobot.com)
   @version  V1.0
-  @date  2021-6-28
+  @date  2024-8-09
   @https://github.com/DFRobot/DFRobot_GS01
 '''
 
@@ -16,7 +16,7 @@ import smbus
 from DFRobot_RTU import *
 
 class DFRobot_GS01(object):
-    # 定义一些寄存器的地址常量
+    # Define register address constants
     REG_GS01_ADDR = 0x0000
     REG_GS01_BAUDRATE = 0x0001
     REG_GS01_VERIFY_AND_STOP = 0x0002
@@ -37,122 +37,122 @@ class DFRobot_GS01(object):
     INPUT_REG_OFFSET = 0x06
 
     def __init__(self):
-        # 初始化类
+        # Initialize the class
         pass
 
     '''
-      @brief 获取设备pid
-      @return 返回设备pid
+      @brief Get the device PID
+      @return Returns the device PID
     '''
     def read_pid(self):
         return self.readInputReg(self.REG_GS01_PID)
 
     '''
-      @brief 获取设备vid
-      @return 返回设备vid
+      @brief Get the device VID
+      @return Returns the device VID
     '''
     def read_vid(self):
         return self.readInputReg(self.REG_GS01_VID)
 
     '''
-      @brief 获取人脸数量
-      @return 返回人脸数量
+      @brief Get the number of detected faces
+      @return Returns the number of detected faces
     '''
     def get_face_number(self):
         return self.readInputReg(self.REG_GS01_FACE_NUMBER)
 
     '''
-      @brief 配置UART
-      @param baud 波特率
-      @param parity 校验位
-      @param stopBit 停止位
+      @brief Configure UART
+      @param baud Baud rate
+      @param parity Parity bit
+      @param stop_bit Stop bits
     '''
     def config_uart(self, baud, parity, stop_bit):
-        # 设置校验位和停止位并组合成一个16位数据
+        # Combine parity and stop bits into a 16-bit value
         verify_and_stop = (parity << 8) | (stop_bit & 0xff)
-        # 设置波特率
+        # Set baud rate
         self.writeHoldingReg(self.REG_GS01_BAUDRATE, baud)
-        # 设置校验位和停止位
+        # Set parity and stop bits
         return self.writeHoldingReg(self.REG_GS01_VERIFY_AND_STOP, verify_and_stop)
 
     '''
-      @brief 获取人脸在X方向的位置
-      @return 返回X位置
+      @brief Get the X location of the face
+      @return Returns the X location
     '''
     def get_face_location_x(self):
         return self.readInputReg(self.REG_GS01_FACE_LOCATION_X)
 
     '''
-      @brief 获取人脸在Y方向的位置
-      @return 返回Y位置
+      @brief Get the Y location of the face
+      @return Returns the Y location
     '''
     def get_face_location_y(self):
         return self.readInputReg(self.REG_GS01_FACE_LOCATION_Y)
-        
+
     '''
-      @brief 获取人脸得分
-      @return 返回得分
+      @brief Get the face score
+      @return Returns the face score
     '''
     def get_face_score(self):
         return self.readInputReg(self.REG_GS01_FACE_SCORE)
-        
+
     '''
-      @brief 获取手势类型
-      @return 返回手势类型
+      @brief Get the gesture type
+      @return Returns the gesture type
     '''
     def get_gesture_type(self):
         return self.readInputReg(self.REG_GS01_GESTURE_TYPE)
-        
+
     '''
-      @brief 获取手势得分
-      @return 返回手势得分
+      @brief Get the gesture score
+      @return Returns the gesture score
     '''
     def get_gesture_score(self):
         return self.readInputReg(self.REG_GS01_GESTURE_SCORE)
-        
+
     '''
-      @brief 设置人脸检测的阈值
-      @param score 阈值分数
+      @brief Set the face detection threshold
+      @param score Threshold score
     '''
     def set_face_detect_thres(self, score):
         return self.writeHoldingReg(self.REG_GS01_FACE_THRESHOLD, score)
-        
+
     '''
-      @brief 设置人脸得分的阈值
-      @param x 阈值
+      @brief Set the face score threshold
+      @param x Threshold value
     '''
     def set_detect_thres(self, x):
         return self.writeHoldingReg(self.REG_GS01_FACE_SCORE_THRESHOLD, x)
-        
+
     '''
-      @brief 设置手势检测的阈值
-      @param score 阈值分数
+      @brief Set the gesture detection threshold
+      @param score Threshold score
     '''
     def set_gesturedetect_thres(self, score):
         return self.writeHoldingReg(self.REG_GS01_GESTURE_SCORE_THRESHOLD, score)
-        
+
     '''
-      @brief 设置设备地址
-      @param addr 要设置的设备地址
+      @brief Set the device address
+      @param addr Address to set
     '''
     def set_addr(self, addr):
         return self.writeHoldingReg(self.REG_GS01_ADDR, addr)
 
 class DFRobot_GS01_I2C(DFRobot_GS01): 
     def __init__(self, bus, addr):
-        # I2C地址和总线初始化
+        # Initialize I2C address and bus
         self.__addr = addr
         self.i2cbus = smbus.SMBus(bus)
         super(DFRobot_GS01_I2C, self).__init__()
 
     '''
       @fn write_reg
-      @brief 写入数据到寄存器
-      @param reg 16位寄存器地址
-      @param data 8位配置寄存器值
+      @brief Write data to a register
+      @param reg 16-bit register address
+      @param data 8-bit register value
     '''
     def write_reg(self, reg, data):
-        # 将数据拆分为高8位和低8位，写入I2C寄存器
+        # Split data into high and low 8 bits and write to I2C register
         val_high_byte = (data >> 8) & 0xFF 
         val_low_byte = data & 0xFF         
         self.i2cbus.write_i2c_block_data(self.__addr, reg, [val_high_byte, val_low_byte])
@@ -160,10 +160,10 @@ class DFRobot_GS01_I2C(DFRobot_GS01):
 
     '''
       @fn read_reg
-      @brief 从寄存器读取数据
-      @param reg 16位寄存器地址
-      @param length 读取数据的长度
-      @return 读取的数据
+      @brief Read data from a register
+      @param reg 16-bit register address
+      @param length Length of data to read
+      @return Data read from the register
     '''
     def read_reg(self, reg, length):
         val_high_byte = (reg >> 8) & 0xFF 
@@ -185,7 +185,7 @@ class DFRobot_GS01_I2C(DFRobot_GS01):
 
 class DFRobot_GS01_UART(DFRobot_GS01, DFRobot_RTU): 
     def __init__(self, baud, addr):
-        # 初始化UART的波特率和地址
+        # Initialize UART baud rate and address
         self.__baud = baud
         self.__addr = addr
         DFRobot_GS01.__init__(self)
@@ -198,7 +198,7 @@ class DFRobot_GS01_UART(DFRobot_GS01, DFRobot_RTU):
         try:
             data = self.read_input_registers(self.__addr, reg, 1)
             
-            # 确保 data 列表中至少有三个元素
+            # Ensure data list has at least three elements
             if len(data) >= 3:
                 regData = (data[1] << 8) | data[2]
             else:
@@ -207,7 +207,6 @@ class DFRobot_GS01_UART(DFRobot_GS01, DFRobot_RTU):
             return regData
         
         except Exception as e:
-    
             return 0
     
     def readHoldingReg(self, reg):

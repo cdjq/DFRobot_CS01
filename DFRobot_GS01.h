@@ -1,3 +1,17 @@
+/*!
+ *@file DFRobot_GS01.h
+ *@brief Define the basic structure of class DFRobot_GS01, the implementation of basic methods.
+ *@details this module is used to identify the information in the QR code
+ *@copyright   Copyright (c) 2010 DFRobot Co.Ltd (http://www.dfrobot.com)
+ *@License     The MIT License (MIT)
+ *@author [fengli](li.feng@dfrobot.com)
+ *@version  V1.0
+ *@date  2024-8-9
+ *@https://github.com/DFRobot/DFRobot_GS01
+*/
+
+
+
 #ifndef _DFROBOT_CS01_H
 #define _DFROBOT_CS01_H
 
@@ -5,20 +19,17 @@
 #include "DFRobot_RTU.h"
 #include <Wire.h>
 #include <stdint.h>
+
+// Uncomment the following line to enable debugging messages
 //#define ENABLE_DBG
+
 #ifdef ENABLE_DBG
 #define LDBG(...)  {Serial.print("["); Serial.print(__FUNCTION__); Serial.print("(): "); Serial.print(__LINE__); Serial.print(" ] "); Serial.println(__VA_ARGS__);}
 #else
 #define LDBG(...)
 #endif
 
-
-
-
-
-
-
-/// Register addresses for GS01 configuration
+// GS01 Configuration Register Addresses
 #define REG_GS01_ADDR            0x00  ///< Device address register
 #define REG_GS01_BAUDRATE        0x01  ///< Baud rate configuration register
 #define REG_GS01_VERIFY_AND_STOP 0x02  ///< Parity and stop bits configuration register
@@ -26,22 +37,22 @@
 #define REG_GS01_FACE_SCORE_THRESHOLD  0x04  ///< Face score threshold
 #define REG_GS01_GESTURE_SCORE_THRESHOLD 0x05 ///< Gesture score threshold
 
-/// Register addresses for GS01 data
+// GS01 Data Register Addresses
 #define REG_GS01_PID                 0x00  ///< Product ID register
 #define REG_GS01_VID                 0x01  ///< Vendor ID register
 #define REG_GS01_HW_VERSION          0x02  ///< Hardware version register
 #define REG_GS01_SW_VERSION          0x03  ///< Software version register
-#define REG_GS01_FACE_NEMBER         0x04  ///< Number of detected faces
+#define REG_GS01_FACE_NUMBER         0x04  ///< Number of detected faces
 #define REG_GS01_FACE_LOCATION_X     0x05  ///< Face X coordinate
 #define REG_GS01_FACE_LOCATION_Y     0x06  ///< Face Y coordinate
 #define REG_GS01_FACE_SCORE          0x07  ///< Face score
-#define REG_GS01_GESTURE_YTPE        0x08  ///< Gesture type
+#define REG_GS01_GESTURE_TYPE        0x08  ///< Gesture type
 #define REG_GS01_GESTURE_SCORE       0x09  ///< Gesture score
 
 #define INPUT_REG_OFFSET             0x06  ///< Input register offset
 
 /**
- * @brief Baud rate configuration enumeration.
+ * @brief Enumeration for baud rate configuration.
  */
 typedef enum {
     eBaud_1200 = 1,     ///< Baud rate 1200
@@ -59,7 +70,7 @@ typedef enum {
 } eBaudConfig_t;
 
 /**
- * @brief UART parity configuration enumeration.
+ * @brief Enumeration for UART parity configuration.
  */
 typedef enum {
     UART_CFG_PARITY_NONE = 0,  ///< No parity
@@ -70,7 +81,7 @@ typedef enum {
 } eParityConfig_t;
 
 /**
- * @brief UART stop bits configuration enumeration.
+ * @brief Enumeration for UART stop bits configuration.
  */
 typedef enum {
     UART_CFG_STOP_BITS_0_5 = 0, ///< 0.5 stop bits
@@ -80,12 +91,10 @@ typedef enum {
 } eStopbits_t;
 
 /**
- * @brief DFRobot_GS01 class.
- * 
- * Provides an interface for interacting with DFRobot GS01 devices.
+ * @brief DFRobot_GS01 class provides an interface for interacting with DFRobot GS01 devices.
  */
 class DFRobot_GS01 {
-public: 
+public:
     /**
      * @brief Constructor for DFRobot_GS01.
      */
@@ -119,38 +128,63 @@ public:
      */
     uint16_t configUart(eBaudConfig_t baud, eParityConfig_t parity, eStopbits_t stopBit);
 
-    
-	bool setFaceDetectThres(uint16_t score);
+    /**
+     * @brief Set face detection threshold.
+     * @param score Threshold value.
+     * @return True if the threshold is set successfully, otherwise false.
+     */
+    bool setFaceDetectThres(uint16_t score);
 
-	bool setDetectThres(uint16_t x);  
-	
-	bool setGestureDetectThres(uint16_t score);
+    /**
+     * @brief Set detection threshold for X coordinate.
+     * @param x Threshold value.
+     * @return True if the threshold is set successfully, otherwise false.
+     */
+    bool setDetectThres(uint16_t x);  
 
-	
-	/**
+    /**
+     * @brief Set gesture detection threshold.
+     * @param score Threshold value.
+     * @return True if the threshold is set successfully, otherwise false.
+     */
+    bool setGestureDetectThres(uint16_t score);
+
+    /**
      * @brief Get the number of faces detected by the device.
      * @return Number of faces detected.
      */
     uint16_t getFaceNumber();
-	
-	
-	uint16_t getFaceLocationX();
-    
-	
-	uint16_t getFaceLocationY();
-	
-	
-	uint16_t getFaceScore();	
-	
-	
-	uint16_t getGestureType();
 
-    	
-	uint16_t getGestureScore();	
-	
-	
-	
-	
+    /**
+     * @brief Get the X coordinate of the detected face.
+     * @return X coordinate of the face.
+     */
+    uint16_t getFaceLocationX();
+
+    /**
+     * @brief Get the Y coordinate of the detected face.
+     * @return Y coordinate of the face.
+     */
+    uint16_t getFaceLocationY();
+
+    /**
+     * @brief Get the score of the detected face.
+     * @return Score of the face.
+     */
+    uint16_t getFaceScore();  
+
+    /**
+     * @brief Get the type of detected gesture.
+     * @return Gesture type.
+     */
+    uint16_t getGestureType();
+
+    /**
+     * @brief Get the score of the detected gesture.
+     * @return Gesture score.
+     */
+    uint16_t getGestureScore();  
+
     /**
      * @brief Read input register.
      * @param reg Register address.
@@ -178,11 +212,9 @@ protected:
 };
 
 /**
- * @brief DFRobot_GS01_UART class.
- * 
- * Provides UART specific implementation for DFRobot GS01 devices.
+ * @brief DFRobot_GS01_UART class provides UART specific implementation for DFRobot GS01 devices.
  */
-class DFRobot_GS01_UART : public DFRobot_GS01 ,public DFRobot_RTU{
+class DFRobot_GS01_UART : public DFRobot_GS01, public DFRobot_RTU {
 public:
     /**
      * @brief Constructor for DFRobot_GS01_UART.
@@ -199,9 +231,7 @@ public:
 };
 
 /**
- * @brief DFRobot_GS01_I2C class.
- * 
- * Provides I2C specific implementation for DFRobot GS01 devices.
+ * @brief DFRobot_GS01_I2C class provides I2C specific implementation for DFRobot GS01 devices.
  */
 class DFRobot_GS01_I2C : public DFRobot_GS01 {
 public: 
@@ -227,4 +257,5 @@ public:
 private:
     TwoWire *_pWire; ///< I2C communication object
 };
+
 #endif

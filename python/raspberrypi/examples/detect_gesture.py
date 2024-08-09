@@ -1,3 +1,15 @@
+'''
+  @file detect_gesture.py
+  @brief Detect gestures
+  @details  This code detects the location, score of faces, and gestures along with their scores.
+  @copyright   Copyright (c) 2010 DFRobot Co.Ltd (http://www.dfrobot.com)
+  @license     The MIT license (MIT)
+  @author [fengli](li.feng@dfrobot.com)
+  @version  V1.0
+  @date  2024-08-09
+  @https://github.com/DFRobot/DFRobot_GS01
+'''
+
 # -*- coding: utf-8 -*-
 import smbus
 import time
@@ -6,57 +18,66 @@ import sys
 sys.path.append("../")
 from DFRobot_GS01 import DFRobot_GS01_I2C, DFRobot_GS01_UART
 
-# 宏定义：设置为True时使用I2C，为False时使用UART
-USE_I2C = False  # 使用I2C时为True，使用UART时为False
+# Macro definition: Set to True to use I2C, False to use UART
+USE_I2C = False  # Set to True to use I2C, False to use UART
 
-# 定义设备地址和波特率
+# Define device address and baud rate
 DEVICE_ID = 0x72
 UART_BAUD_RATE = 115200
 
-# 根据宏定义选择使用I2C或UART
+# Choose between I2C or UART based on the macro definition
 if USE_I2C:
-    # 使用I2C接口
-    cs01 = DFRobot_GS01_I2C(bus=1, addr=DEVICE_ID)  # 假设使用I2C总线1
+    # Using I2C interface
+    cs01 = DFRobot_GS01_I2C(bus=1, addr=DEVICE_ID)  # Assuming I2C bus 1 is used
 else:
-    # 使用UART接口
+    # Using UART interface
     cs01 = DFRobot_GS01_UART(baud=UART_BAUD_RATE, addr=DEVICE_ID)
 
 def setup():
+    """
+    @brief Setup function for initializing sensor thresholds.
     
-    # 设置人脸检测得分阈值（0~100）
+    This function sets the thresholds for face detection and gesture detection.
+    """
+    # Set face detection score threshold (0~100)
     cs01.set_face_detect_thres(60)
     print("Face detection threshold set to 60.")
     
-    # 设置手势检测得分阈值（0~100）
-    cs01.set_gesturedetect_thres(60)
+    # Set gesture detection score threshold (0~100)
+    cs01.set_gesture_detect_thres(60)
     print("Gesture detection threshold set to 60.")
     
-    # 设置检测范围，0~100
-    cs01.set_gesturedetect_thres(100)
+    # Set detection range, 0~100
+    cs01.set_gesture_detect_thres(100)
     print("Detection range set to maximum.")
 
 def loop():
+    """
+    @brief Main loop function for continuous detection.
+    
+    This function continuously checks for faces and gestures, and prints their details.
+    """
     while True:
-        # 检查是否检测到人脸
+        # Check if any faces are detected
         if cs01.get_face_number() > 0:
-            # 获取人脸得分、位置坐标
+            # Get face score and position coordinates
             face_score = cs01.get_face_score()
             face_x = cs01.get_face_location_x()
             face_y = cs01.get_face_location_y()
             
             print("Detect face at (x = {}, y = {}, score = {})".format(face_x, face_y, face_score))
             
-            # 获取手势类型和得分
+            # Get gesture type and score
             gesture_type = cs01.get_gesture_type()
             gesture_score = cs01.get_gesture_score()
             
             print("Detect gesture {}, score = {}".format(gesture_type, gesture_score))
         
-        # 延时500毫秒
+        # Delay for 500 milliseconds
         time.sleep(0.5)
 
-# 执行setup函数
+# Execute setup function
 setup()
 
-# 执行loop函数
+# Execute loop function
 loop()
