@@ -24,7 +24,7 @@ USE_I2C = False  # Set to True to use I2C; set to False to use UART
 
 # Define device address and baud rate
 DEVICE_ID = 0x72
-UART_BAUD_RATE = 115200
+UART_BAUD_RATE = 9600
 
 # Choose between I2C or UART based on the macro
 if USE_I2C:

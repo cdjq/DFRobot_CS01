@@ -24,7 +24,7 @@ char str[100];
 
 void setup(){
     // Initialize Serial1 for UART communication with the GS01 sensor
-    Serial1.begin(115200);
+    Serial1.begin(9600);
 
     // Initialize serial communication for debugging purposes
     Serial.begin(115200);
@@ -39,7 +39,7 @@ void setup(){
 
     // Set the gesture detection range.
     // The range is from 0 to 100; 0 has the smallest detection range, and 100 has the largest.
-    cs01.setGestureDetectThres(100);
+    cs01.setDetectThres(100);
 }
 
 

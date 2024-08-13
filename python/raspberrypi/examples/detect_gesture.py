@@ -23,7 +23,7 @@ USE_I2C = False  # Set to True to use I2C, False to use UART
 
 # Define device address and baud rate
 DEVICE_ID = 0x72
-UART_BAUD_RATE = 115200
+UART_BAUD_RATE = 9600
 
 # Choose between I2C or UART based on the macro definition
 if USE_I2C:
@@ -48,7 +48,7 @@ def setup():
     print("Gesture detection threshold set to 60.")
     
     # Set detection range, 0~100
-    cs01.set_gesture_detect_thres(100)
+    cs01.set_detect_thres(100)
     print("Detection range set to maximum.")
 
 def loop():
@@ -74,7 +74,7 @@ def loop():
             print("Detect gesture {}, score = {}".format(gesture_type, gesture_score))
         
         # Delay for 500 milliseconds
-        time.sleep(0.5)
+        time.sleep(1.5)
 
 # Execute setup function
 setup()

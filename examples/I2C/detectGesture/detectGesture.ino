@@ -39,7 +39,7 @@ void setup(){
 
     // Set the gesture detection range. 
     // The range is from 0 to 100; 0 has the smallest detection range, and 100 has the largest.
-    cs01.setGestureDetectThres(100);
+    cs01.setDetectThres(100);
 }
 
 
@@ -65,5 +65,5 @@ void loop(){
     }
     
     // Delay before the next loop iteration
-    delay(500);
+    delay(1500);
 }

@@ -23,7 +23,7 @@ USE_I2C = False  # Set to True to use I2C, False to use UART
 
 # Define device address and baud rate
 DEVICE_ID = 0x72
-UART_BAUD_RATE = 115200
+UART_BAUD_RATE = 9600
 
 # Choose between I2C or UART based on the macro definition
 if USE_I2C:
@@ -42,7 +42,8 @@ def main():
     # Retrieve and print PID
     pid = cs01.read_pid()
     print("PID: {}".format(pid))
-
+    vid = cs01.read_vid()
+    print("VID: {}".format(vid))
 # Execute the main function if the script is run directly
 if __name__ == "__main__":
     main()

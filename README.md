@@ -24,12 +24,12 @@ Provide an Arduino library to control
 
 ## Installation
 
-To use this library, first download the library file, paste it into the \Arduino\libraries directory, then open the examples folder and run the demo in the folder.
-
+1.To use this library, first download the library file, paste it into the \Arduino\libraries directory, then open the examples folder and run the demo in the folder.
+2.Use the library also need to download depends on: https://github.com/DFRobot/DFRobot_RTU
 ## Methods
 ```C++
 
-    /**
+/**
      * @brief Constructor for DFRobot_GS01.
      */
     DFRobot_GS01();
@@ -47,12 +47,6 @@ To use this library, first download the library file, paste it into the \Arduino
     uint16_t getGs01Vid();
 
     /**
-     * @brief Get the number of faces detected by the device.
-     * @return Number of faces detected.
-     */
-    uint16_t getFaceNumber();
-
-    /**
      * @brief Set the device address.
      * @param addr Device address.
      * @return True if the address is set successfully, otherwise false.
@@ -67,6 +61,63 @@ To use this library, first download the library file, paste it into the \Arduino
      * @return Status of the configuration.
      */
     uint16_t configUart(eBaudConfig_t baud, eParityConfig_t parity, eStopbits_t stopBit);
+
+    /**
+     * @brief Set face detection threshold.
+     * @param score Threshold value.
+     * @return True if the threshold is set successfully, otherwise false.
+     */
+    bool setFaceDetectThres(uint16_t score);
+
+    /**
+     * @brief Set detection threshold for X coordinate.
+     * @param x Threshold value.
+     * @return True if the threshold is set successfully, otherwise false.
+     */
+    bool setDetectThres(uint16_t x);  
+
+    /**
+     * @brief Set gesture detection threshold.
+     * @param score Threshold value.
+     * @return True if the threshold is set successfully, otherwise false.
+     */
+    bool setGestureDetectThres(uint16_t score);
+
+    /**
+     * @brief Get the number of faces detected by the device.
+     * @return Number of faces detected.
+     */
+    uint16_t getFaceNumber();
+
+    /**
+     * @brief Get the X coordinate of the detected face.
+     * @return X coordinate of the face.
+     */
+    uint16_t getFaceLocationX();
+
+    /**
+     * @brief Get the Y coordinate of the detected face.
+     * @return Y coordinate of the face.
+     */
+    uint16_t getFaceLocationY();
+
+    /**
+     * @brief Get the score of the detected face.
+     * @return Score of the face.
+     */
+    uint16_t getFaceScore();  
+
+    /**
+     * @brief Get the type of detected gesture.
+     * @return Gesture type.
+     */
+    uint16_t getGestureType();
+
+    /**
+     * @brief Get the score of the detected gesture.
+     * @return Gesture score.
+     */
+    uint16_t getGestureScore();  
 
 ```
 

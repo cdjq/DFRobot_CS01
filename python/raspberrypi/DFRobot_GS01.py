@@ -128,7 +128,7 @@ class DFRobot_GS01(object):
       @brief Set the gesture detection threshold
       @param score Threshold score
     '''
-    def set_gesturedetect_thres(self, score):
+    def set_gesture_detect_thres(self, score):
         return self.writeHoldingReg(self.REG_GS01_GESTURE_SCORE_THRESHOLD, score)
 
     '''

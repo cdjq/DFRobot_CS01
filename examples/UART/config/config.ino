@@ -21,7 +21,7 @@ DFRobot_GS01_UART cs01(&Serial1, DEVICE_ID);
 
 void setup(){
     // Initialize Serial1 for UART communication with the GS01 sensor
-    Serial1.begin(115200);
+    Serial1.begin(9600);
 
     // Initialize serial communication for debugging purposes
     Serial.begin(115200);

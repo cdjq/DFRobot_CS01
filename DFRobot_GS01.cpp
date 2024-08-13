@@ -26,7 +26,7 @@ uint16_t DFRobot_GS01::getGs01Vid()
 
 
 uint16_t DFRobot_GS01::getFaceNumber(){
-    return reaInputdReg(REG_GS01_FACE_NEMBER);
+    return reaInputdReg(REG_GS01_FACE_NUMBER);
 }	
 uint16_t DFRobot_GS01::configUart(eBaudConfig_t baud,eParityConfig_t parity,eStopbits_t stopBit){
 	uint16_t baudRate = baud;
@@ -51,7 +51,7 @@ uint16_t DFRobot_GS01::getFaceScore(){
     return reaInputdReg(REG_GS01_FACE_SCORE);
 }	
 uint16_t DFRobot_GS01::getGestureType(){
-    return reaInputdReg(REG_GS01_GESTURE_YTPE);
+    return reaInputdReg(REG_GS01_GESTURE_TYPE);
 }
 uint16_t DFRobot_GS01::getGestureScore(){
 	
@@ -63,12 +63,12 @@ uint16_t DFRobot_GS01::getGestureScore(){
 bool DFRobot_GS01::setFaceDetectThres(uint16_t score){
 	
 	
-	return writeIHoldingReg(REG_GS01_FACE_THRESHOLD,score);
+	return writeIHoldingReg(REG_GS01_FACE_SCORE_THRESHOLD,score);
 	
 }
 
 bool DFRobot_GS01::setDetectThres(uint16_t x){
-    return writeIHoldingReg(REG_GS01_FACE_SCORE_THRESHOLD,x);
+    return writeIHoldingReg(REG_GS01_FACE_THRESHOLD,x);
 }  
 
 bool DFRobot_GS01::setGestureDetectThres(uint16_t score){
@@ -141,7 +141,10 @@ bool DFRobot_GS01_I2C::begin(TwoWire *pWire)
 {
 	
   _pWire = pWire;
+  pWire->setClock(100000);
   pWire->begin();
+   pWire->setClock(100000);
+  return true;
 }
 bool DFRobot_GS01_I2C::wirteReg(uint16_t reg,uint16_t data)
 {
@@ -153,6 +156,7 @@ bool DFRobot_GS01_I2C::wirteReg(uint16_t reg,uint16_t data)
   _pWire->write(data>>8);
   _pWire->write(data&0xff);
   _pWire->endTransmission();
+  delay(100);
   return true;
 }
 uint16_t DFRobot_GS01_I2C::readReg(uint16_t reg)
@@ -166,14 +170,21 @@ uint16_t DFRobot_GS01_I2C::readReg(uint16_t reg)
   delay(50);
   
   _pWire->requestFrom(_addr,(uint8_t)2);
+  delay(50);
   value = _pWire->read();
   value = value<<8 | _pWire->read();
   
   delay(100);
+  
+  if(value == 0x3636 || value == 0xffff) return 0;
+  
   return value;
 }
 bool DFRobot_GS01_I2C::writeIHoldingReg(uint16_t reg,uint16_t data)
 {
+	
+	
+	
     return wirteReg(reg,data);
 }
 uint16_t DFRobot_GS01_I2C::reaInputdReg(uint16_t reg)

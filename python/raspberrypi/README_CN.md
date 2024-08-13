@@ -7,7 +7,7 @@ GS01是一款可以在最远3米距离跟踪人体头肩和检测五种手势的
 
 ## 产品链接（https://www.dfrobot.com.cn/goods-3398.html)
 
-  SEN0486：Gravity：环形二维码扫描识别传感器
+  SEN0626:手势识别传感器
 
 ## 目录
 
@@ -20,7 +20,7 @@ GS01是一款可以在最远3米距离跟踪人体头肩和检测五种手势的
 
 ## 简介
 
-提供用于控制GS01传感器的Arduino库。
+提供用于控制GS01传感器的python库。
 
 ## 安装
 
@@ -29,71 +29,92 @@ GS01是一款可以在最远3米距离跟踪人体头肩和检测五种手势的
 ## 方法
 ```python
   
-  def begin(self):
-  '''
-    @fn begin
-    @brief Init chip
-  '''
   
-  def reset(self):
-  '''
-    @fn reset
-    @brief Restore factory settings
-    @return true (The setting succeeds)/false (The setting failed)
-  '''  
-      
-  def setup_code(self,on,content):
-  '''
-    @fn setup_code
-    @brief Set code config, the value of chip register can be changed by using the module to scan QR code
-    @param on true (Enable setting code)/false (Disable setting code)
-    @param content true (Output the set code content)/false (The set code content is not output)
-    @return true (The setting succeeds)/false (The setting failed)
-  '''
+    '''
+      @brief Get the device PID
+      @return Returns the device PID
+    '''
+    def read_pid(self):
 
-  def encode(self,encode):
-  '''
-    @fn encode
-    @brief Read the data encoding scheme
-    @param encode Encoding scheme
-                    eGBK,
-                    eUTF8,
-    @return true (The setting succeeds)/false (The setting failed)
-  '''
+    '''
+      @brief Get the device VID
+      @return Returns the device VID
+    '''
+    def read_vid(self):
 
-  def set_head_data(self,head):
-  '''
-    @fn set_head_data
-    @brief Add the packet header data into the output data
-    @param head The concrete data of packet header e3(0x03)/e4(0x04)
-    @return true (The setting succeeds)/false (The setting failed)
-  '''
+    '''
+      @brief Get the number of detected faces
+      @return Returns the number of detected faces
+    '''
+    def get_face_number(self):
 
-  def set_identify(self,berCode):
-  '''
-    @fn set_identify
-    @brief Set the available types of QR code for recognition
-    @param berCode 
-           eForbidAllBarcode, //Forbid all the QR code recognition
-           eEnableAllBarcode, // Enable all the QR code recognition
-           eEnableDefaultcode, // Enable the default QR code recognition
-    @return true (The setting succeeds)/false (The setting failed)
-  '''
-      
-  def response_payload(self):
-  '''
-    @fn response_payload
-    @brief Detect the data contained in the scanned QR code
-    @return  Return the scanned data as a character string
-  '''
+    '''
+      @brief Configure UART
+      @param baud Baud rate
+      @param parity Parity bit
+      @param stop_bit Stop bits
+    '''
+    def config_uart(self, baud, parity, stop_bit):
+
+    '''
+      @brief Get the X location of the face
+      @return Returns the X location
+    '''
+    def get_face_location_x(self):
+
+    '''
+      @brief Get the Y location of the face
+      @return Returns the Y location
+    '''
+    def get_face_location_y(self):
+
+    '''
+      @brief Get the face score
+      @return Returns the face score
+    '''
+    def get_face_score(self):
+
+    '''
+      @brief Get the gesture type
+      @return Returns the gesture type
+    '''
+    def get_gesture_type(self):
+
+    '''
+      @brief Get the gesture score
+      @return Returns the gesture score
+    '''
+    def get_gesture_score(self):
+
+    '''
+      @brief Set the face detection threshold
+      @param score Threshold score
+    '''
+    def set_face_detect_thres(self, score):
+
+    '''
+      @brief Set the face score threshold
+      @param x Threshold value
+    '''
+    def set_detect_thres(self, x):
+
+    '''
+      @brief Set the gesture detection threshold
+      @param score Threshold score
+    '''
+    def set_gesturedetect_thres(self, score):
+
+    '''
+      @brief Set the device address
+      @param addr Address to set
+    '''
+    def set_addr(self, addr):
 ```
 
 ## 兼容性
 
 | MCU         | Work Well | Work Wrong  | Untested | Remarks |
 | ------------ | :--: | :----: | :----: | :--: |
-| RaspberryPi2 |      |        |   √    |      |
-| RaspberryPi3 |      |        |   √    |      |
 | RaspberryPi4 |  √   |        |        |      |
 
 * Python version 
@@ -104,11 +125,11 @@ GS01是一款可以在最远3米距离跟踪人体头肩和检测五种手势的
 | Python3 |  √   |        |        |      |
 ## 历史 
 
-- 2021/07/02 - Version 1.0.0 released.
+- 2024/08/13 - Version 1.0.0 released.
 
 ## 贡献者
 
-Written by fengli(li.feng@dfrobot.com), 2021.7.2 (Welcome to our [website](https://www.dfrobot.com/))
+Written by fengli(li.feng@dfrobot.com), 2024.08.13 (Welcome to our [website](https://www.dfrobot.com/))
 
 
 
